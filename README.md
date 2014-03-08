@@ -24,6 +24,7 @@ attribute :templates,              List/String of templates names to link with z
 attribute :zabbix_user,            Zabbix username with api access
 attribute :zabbix_url,             Zabbix server url (ex: http://zabbix.example.com/api_jsonrpc.php )
 attribute :zabbix_password,        Password for api access
+attribute :parameters,             Optional hash of parameters passed directly to api
 ```
 
 Check zabbix wiki for this options, usually leave it as default
@@ -42,6 +43,8 @@ LWRP
 #### 
 
 ```chef
+param = { "inventory" => { "tag"  => "mytag" } }
+
 dzix_host node["ec2"]["instance_id"] do
   zabbix_debug true
   zabbix_user "api"
@@ -51,6 +54,7 @@ dzix_host node["ec2"]["instance_id"] do
   zabbix_host_dns node["ec2"]["public_hostname"]
   templates [ "Template_Linux", "Template_Standalone" ]
   groups "Desktop Computers"
+  parameters param
   action [ :register, :linktemplates ]
 end
 

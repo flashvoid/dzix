@@ -11,5 +11,6 @@ attribute :zabbix_int_port,        :kind_of => Integer, :default => 10050
 attribute :zabbix_user,            :kind_of => String
 attribute :zabbix_url,             :kind_of => String
 attribute :zabbix_password,        :kind_of => String
+attribute :parameters,             :kind_of => Hash, :default => {}
 attribute :groups,                 :kind_of => [ String, Array ]
 attribute :templates,              :kind_of => [ String, Array ]
