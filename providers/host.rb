@@ -19,6 +19,7 @@ action :register do
     new_resource.zabbix_host_dns,
     new_resource.zabbix_int_port,
     new_resource.zabbix_int_useip,
+    new_resource.parameters,
   )
 end
 
@@ -54,7 +55,7 @@ def deregister_host(zabbix_debug, zabbix_user, zabbix_url, zabbix_password)
   end
 end
 
-def create_host(name, zabbix_debug, zabbix_user, zabbix_url, zabbix_password, groups, zabbix_int_type, zabbix_int_main, zabbix_host_ip, zabbix_host_dns, zabbix_int_port, zabbix_int_useip)
+def create_host(name, zabbix_debug, zabbix_user, zabbix_url, zabbix_password, groups, zabbix_int_type, zabbix_int_main, zabbix_host_ip, zabbix_host_dns, zabbix_int_port, zabbix_int_useip, parameters)
   if node["zabbix"]["hostid"]
     Chef::Log.info("Host already exists as hostid = #{node["zabbix"]["hostid"]}")
   else
@@ -69,6 +70,7 @@ def create_host(name, zabbix_debug, zabbix_user, zabbix_url, zabbix_password, gr
         :useip => zabbix_int_useip
       ],
       :groups => [ :groupid => dzix.hostgroups.get_id(:name => groups) ],
+      parameters
     )
     node.set["zabbix"]["hostid"] = hostid
     node.save
