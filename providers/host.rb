@@ -6,20 +6,24 @@ def whyrun_supported?
 end
 
 action :register do
+  data = {
+      :host => new_resource.name,
+      :interfaces => [
+        :type => new_resource.zabbix_int_type,
+        :main => new_resource.zabbix_int_main,
+        :ip => new_resource.zabbix_host_ip,
+        :dns => new_resource.zabbix_host_dns,
+        :port => new_resource.zabbix_int_port,
+        :useip => new_resource.zabbix_int_useip
+      ],
+      :groups => [ :groupid => dzix.hostgroups.get_id(:name => new_resource.groups) ],
+   }
+  unless new_resource.parameters.nil?
+    Chef::Log.debug("Merging parameters into data")
+    data=data.merge(new_resource.parameters)
+  end
   create_host(
-    new_resource.name,
-    new_resource.zabbix_debug,
-    new_resource.zabbix_user,
-    new_resource.zabbix_url,
-    new_resource.zabbix_password,
-    new_resource.groups,
-    new_resource.zabbix_int_type,
-    new_resource.zabbix_int_main,
-    new_resource.zabbix_host_ip,
-    new_resource.zabbix_host_dns,
-    new_resource.zabbix_int_port,
-    new_resource.zabbix_int_useip,
-    new_resource.parameters,
+    data
   )
 end
 
@@ -55,25 +59,17 @@ def deregister_host(zabbix_debug, zabbix_user, zabbix_url, zabbix_password)
   end
 end
 
-def create_host(name, zabbix_debug, zabbix_user, zabbix_url, zabbix_password, groups, zabbix_int_type, zabbix_int_main, zabbix_host_ip, zabbix_host_dns, zabbix_int_port, zabbix_int_useip, parameters)
-  if node["zabbix"]["hostid"]
+def create_host(data)
+  if !Chef::Config[:solo] and node["zabbix"]["hostid"]
     Chef::Log.info("Host already exists as hostid = #{node["zabbix"]["hostid"]}")
   else
     hostid = dzix.hosts.create(
-      :host => name,
-      :interfaces => [
-        :type => zabbix_int_type,
-        :main => zabbix_int_main,
-        :ip => zabbix_host_ip,
-        :dns => zabbix_host_dns,
-        :port => zabbix_int_port,
-        :useip => zabbix_int_useip
-      ],
-      :groups => [ :groupid => dzix.hostgroups.get_id(:name => groups) ],
-      parameters
+      data
     )
     node.set["zabbix"]["hostid"] = hostid
-    node.save
+    if !Chef::Config[:solo] 
+      node.save
+    end
   end
 end
 
