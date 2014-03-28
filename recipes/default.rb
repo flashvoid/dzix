@@ -8,4 +8,5 @@
 #
 chef_gem 'zabbixapi' do
   action :install
+  version node['dzix']['zabbixapiversion']
 end
