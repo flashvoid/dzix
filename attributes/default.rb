@@ -1,1 +1,1 @@
-default['dzix']['zabbixapiversion'] = "2.0.0"
+default['dzix']['zabbixapiversion'] = "~> 0.6.3"
